@@ -1,0 +1,22 @@
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+:{$PORT:8080} {
+	# The API lives under /api on the same domain, so the login cookie stays first-party.
+	redir /api /api/
+	handle_path /api/* {
+		reverse_proxy 127.0.0.1:{$SERVER_PORT:3001}
+	}
+
+	# The built web client (single-page app).
+	handle {
+		root * /app/apps/client/build
+		header Content-Security-Policy "frame-ancestors 'none';"
+		header X-Content-Type-Options nosniff
+		try_files {path} /index.html
+		file_server
+	}
+}

@@ -1,0 +1,22 @@
+# Local test only (not used by Railway).
+services:
+  web:
+    build: .
+    ports: ["8080:8080"]
+    environment:
+      PORT: "8080"
+      CLIENT_ENDPOINT: http://localhost:8080
+      API_ENDPOINT: http://localhost:8080/api
+      SPOTIFY_PUBLIC: test-client-id
+      SPOTIFY_SECRET: test-client-secret
+      MONGO_ENDPOINT: mongodb://mongo:testpass@mongo:27017/your_spotify?authSource=admin
+    depends_on: [mongo]
+  mongo:
+    image: mongo:8.0.38@sha256:479e85ced54ffb8a40dade1dcde2da2a9ae858515b9415e9cc54bfb8f0575d01
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: testpass
+      GLIBC_TUNABLES: glibc.pthread.rseq=1
+    volumes: ["mongo-data:/data/db"]
+volumes:
+  mongo-data:
